@@ -17,13 +17,13 @@ theme:
       toggle:
         icon: material/toggle-switch-off-outline
         name: Dark
-      primary: black
-      accent: purple
+      primary: grey
+      accent: pink
     - scheme: slate
       toggle:
         icon: material/toggle-switch
         name: Light
-      primary: blue grey
+      primary: black
       accent: cyan
 markdown_extensions:
   - pymdownx.highlight:
