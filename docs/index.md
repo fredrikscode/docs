@@ -1,9 +1,3 @@
-# Docs
+# Home
 
-For full documentation visit [mkdocs.org](https://www.mkdocs.org).
-
-## Code Annotation Examples
-
-### Codeblocks
-
-Some `code` goes here.
+This is a place for me to collect my personal documentation and scripts. Feel free to use anything as you wish :)
