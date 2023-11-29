@@ -8,12 +8,12 @@ permissions:
   contents: write
 jobs:
   deploy:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
       - uses: actions/setup-python@v4
         with:
-          python-version: 3.9.18
+          python-version: 3.x
       - uses: actions/cache@v2
         with:
           key: ${{ github.ref }}
