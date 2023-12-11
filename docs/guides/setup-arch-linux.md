@@ -7,6 +7,54 @@
 3. Ensure internet access through ethernet or WiFi.
     1. To connect to WiFi, use: `wifi-menu`
 4. Enable NTP: `timedatectl set-ntp true`
+5. Sort mirrors by rate: `reflector -c Sweden --sort rate --save /etc/pacman.d/mirrorlist`
+6. Sync mirrors: `pacman -Syyy`
+7. Setup 500MB EFI, Whatever (5GB) swap, rest is a linux filesystem partition
+8. mkfs.fat -F32 /dev/vda1
+9. mkswap /dev/vda2
+10. swapon /dev/vda2
+11. mkfs.btrfs /dev/vda3
+12. mount /dev/vda3 /mnt
+13. Create subvolumes:
+- btrfs su cr /mnt/@home
+- btrfs su cr /mnt/@root
+- btrfs su cr /mnt/@log
+- btrfs su cr /mnt/@cache
+- btrfs su cr /mnt/@tmp
+14. umount /mnt
+15. Create directories
+- mkdir /mnt/home
+- mkdir /mnt/root
+- mkdir /mnt/tmp
+- mkdir -p /mnt/var/log
+- mkdir -p /mnt/var/cache
+15. Mount subvolumes
+- mount -o defaults,noatime,compress=zstd,commit=120,subvol=@home /dev/vda3 /mnt/home
+- mount -o defaults,noatime,compress=zstd,commit=120,subvol=@home /dev/vda3 /mnt/root
+- mount -o defaults,noatime,compress=zstd,commit=120,subvol=@home /dev/vda3 /mnt/var/log
+- mount -o defaults,noatime,compress=zstd,commit=120,subvol=@home /dev/vda3 /mnt/var/cache
+- mount -o defaults,noatime,compress=zstd,commit=120,subvol=@home /dev/vda3 /mnt/tmp
+16. mkdir -p /mnt/boot/efi
+17. mount /dev/vda1 /mnt/boot/efi
+18. pacstrap /mnt base base-devel linux linux-firmware vim btrfs-progs
+19. genfstab -U /mnt >> /mnt/etc/fstab
+20. arch-chroot /mnt
+21. ln -sf /usr/share/zoneinfo/Europe/Stockholm /etc/localtime
+22. hwclock --systohc
+23. Enable en_US.UTF-8: vim /etc/locale.gen /// locale-gen
+24. locale-gen
+25. echo LANG=en_US.UTF-8 > /etc/locale.conf
+26. echo KEYMAP=sv-latin1 > /etc/vconsole.conf
+27. echo archbox > /etc/hostname
+28. echo "127.0.0.1     localhost" >> /etc/hosts
+29. echo "::1           localhost" >> /etc/hosts
+30. echo "127.0.0.1     archbox.localdomain archbox
+31. pacman -S networkmanager
+32. systemctl enable NetworkManager
+33. passwd for root
+34. pacman -S grub efibootmgr
+35. grub-install --target=x86_64-efi --efi-directory=/boot/efi
+
 
 ## :material-harddisk: Partitioning
 
