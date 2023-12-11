@@ -1,13 +1,12 @@
 # Setup Arch Linux
 
-
-## Pre-checks and tasks
 1. Verify that we've booted into EFI mode: `efivar -L`
 2. Set keymap. For Swedish: `loadkeys sv-latin1`
 3. Ensure internet access through ethernet or WiFi.
     1. To connect to WiFi, use: `wifi-menu`
 4. Enable NTP: `timedatectl set-ntp true`
 5. Sort mirrors by rate: `reflector -c Sweden --sort rate --save /etc/pacman.d/mirrorlist`
+6. sed -i '//#ParallelDownloads = 5/s/^#/g' /etc/pacman.conf
 6. Sync mirrors: `pacman -Syyy`
 7. Setup 500MB EFI, Whatever (5GB) swap, rest is a linux filesystem partition
 8. mkfs.fat -F32 /dev/vda1
@@ -16,6 +15,7 @@
 11. mkfs.btrfs /dev/vda3
 12. mount /dev/vda3 /mnt
 13. Create subvolumes:
+- btrfs su cr /mnt/@
 - btrfs su cr /mnt/@home
 - btrfs su cr /mnt/@root
 - btrfs su cr /mnt/@log
@@ -29,6 +29,7 @@
 - mkdir -p /mnt/var/log
 - mkdir -p /mnt/var/cache
 15. Mount subvolumes
+- mount -o defaults,noatime,compress=zstd,commit=120,subvol=@ /dev/vda3 /mnt
 - mount -o defaults,noatime,compress=zstd,commit=120,subvol=@home /dev/vda3 /mnt/home
 - mount -o defaults,noatime,compress=zstd,commit=120,subvol=@home /dev/vda3 /mnt/root
 - mount -o defaults,noatime,compress=zstd,commit=120,subvol=@home /dev/vda3 /mnt/var/log
@@ -36,7 +37,7 @@
 - mount -o defaults,noatime,compress=zstd,commit=120,subvol=@home /dev/vda3 /mnt/tmp
 16. mkdir -p /mnt/boot/efi
 17. mount /dev/vda1 /mnt/boot/efi
-18. pacstrap /mnt base base-devel linux linux-firmware vim btrfs-progs
+18. pacstrap /mnt base base-devel linux linux-firmware vim btrfs-progs intel-ucode
 19. genfstab -U /mnt >> /mnt/etc/fstab
 20. arch-chroot /mnt
 21. ln -sf /usr/share/zoneinfo/Europe/Stockholm /etc/localtime
@@ -54,7 +55,15 @@
 33. passwd for root
 34. pacman -S grub efibootmgr
 35. grub-install --target=x86_64-efi --efi-directory=/boot/efi
-
+36. grub-mkconfig -o /boot/grub/grub.cfg
+37. umount -R /mnt
+38. reboot
+39. useradd -m -g users -G audio,video,network,wheel,storage,rfkill -s /bin/bash fredrik
+40. passwd fredrik
+41. EDITOR=vim visudo --- uncomment wheel stuff
+42. login as fredrik
+43. sudo vim /etc/pacman.conf - Fix paralleldownloads
+44. pacman -S xorg-server xorg-apps xorg-xinit alacritty sddm
 
 ## :material-harddisk: Partitioning
 
